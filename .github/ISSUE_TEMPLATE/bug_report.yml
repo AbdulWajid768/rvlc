@@ -1,0 +1,46 @@
+name: Bug report
+description: Something does not work as expected
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting! Please do not attach copyrighted media.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Open …\n2. Press …\n3. …"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Playback, Subtitle Studio, Subtitle editor, Audio Sync Lab, Library / playlist, Picture & Sound, Settings / shortcuts, Packaging, Other]
+    validations:
+      required: true
+  - type: input
+    id: media
+    attributes:
+      label: Media details
+      description: Container and codecs from File › File Info, and the subtitle format/encoding if relevant.
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: RVLC version, macOS version, Mac model (Apple silicon / Intel), libmpv source (bundled app or Homebrew)
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Optional. `log show --last 5m --predicate 'subsystem == "RVLCPlayer"'` (paths are redacted by default).
+      render: text

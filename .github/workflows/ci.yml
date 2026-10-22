@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build, lint and test (macOS)
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app || true
+
+      - name: Install libmpv, pkgconf and FFmpeg
+        run: brew install mpv pkgconf ffmpeg
+
+      - name: Lint
+        run: swift format lint --strict -r Sources Tests Package.swift
+
+      - name: Build
+        run: swift build
+
+      - name: Test (unit, real-engine integration and UI)
+        run: swift test
+
+      - name: Package and self-test
+        run: SKIP_DMG=1 scripts/package-macos.sh
+
+      - name: Upload app bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: RVLC-app
+          path: dist/RVLC.app
+          if-no-files-found: error

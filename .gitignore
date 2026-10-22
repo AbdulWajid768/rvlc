@@ -1,0 +1,9 @@
+.build/
+.swiftpm/
+/dist/
+*.xcodeproj/xcuserdata/
+DerivedData/
+.DS_Store
+.idea/
+.claude/
+/Tests/Fixtures/generated/
