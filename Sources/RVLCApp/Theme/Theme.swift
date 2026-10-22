@@ -34,12 +34,10 @@ enum Theme {
     static let readoutFont = NSFont.monospacedDigitSystemFont(ofSize: 26, weight: .semibold)
 
     // MARK: Colour
-    /// Brand indigo used for the logo and empty state accents.
-    static let brand = NSColor(name: "RVLCBrand") { appearance in
-        appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-            ? NSColor(srgbRed: 0.49, green: 0.56, blue: 1.0, alpha: 1)
-            : NSColor(srgbRed: 0.27, green: 0.33, blue: 0.86, alpha: 1)
-    }
+    /// Brand purple (#8B5CF6) used for the logo and empty state accents.
+    static let brand = NSColor(srgbRed: 0x8B / 255, green: 0x5C / 255, blue: 0xF6 / 255, alpha: 1)
+    /// Secondary brand accent, electric blue (#3B82F6).
+    static let brandSecondary = NSColor(srgbRed: 0x3B / 255, green: 0x82 / 255, blue: 0xF6 / 255, alpha: 1)
     static let videoBackground = NSColor.black
     static let positive = NSColor.systemGreen
     static let warning = NSColor.systemOrange

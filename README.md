@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="brand/svg/logo-dark.svg">
+    <img src="brand/svg/logo-light.svg" alt="RVLC — Reimagined VLC" width="360">
+  </picture>
+</p>
+
 # RVLC
 
 [![CI](https://github.com/AbdulWajid768/rvlc/actions/workflows/ci.yml/badge.svg)](https://github.com/AbdulWajid768/rvlc/actions/workflows/ci.yml)
