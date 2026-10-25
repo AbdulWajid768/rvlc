@@ -6,10 +6,11 @@ Spark plan, and there is no build step.
 
 | Path | Contents |
 |---|---|
-| `public/index.html` | The page: hero, Smart Subtitle Sync, features, install guide, release notes. |
-| `public/styles.css` | Styles (dark by default, light with `prefers-color-scheme`). |
+| `public/index.html` | The page, laid out like a film in chapters: opening titles, Smart Subtitle Sync, the player, privacy, install, release notes and end credits. |
+| `public/styles.css` | Styles: dark and cinematic, set in Geist, Geist Mono and Instrument Serif (Google Fonts). |
 | `public/app.js` | Loads the latest release from GitHub and reads/increments the download counter. |
-| `public/assets/` | Copies of the logo, icons and social preview from [`../brand`](../brand). |
+| `public/motion.js` | Animations: opening curtain, scroll-linked tilt, scrub bar and timecode, reveals, the interactive sync demo and the feature-grid loops. Everything is static under "reduce motion". |
+| `public/assets/` | Icons and social preview from [`../brand`](../brand), a real screenshot of RVLC (`shot-studio.jpg`) and a short loop (`film.mp4`) that plays inside its video area. |
 | `firestore.rules` | Anyone may read the counter; a write may only add exactly 1. |
 | `firebase.json`, `.firebaserc` | Hosting, rules and emulator settings; the Firebase project ID. |
 
@@ -92,6 +93,7 @@ and redeploy only if you want the offline fallback to show the new version.
 firebase emulators:start --only hosting,firestore
 ```
 
-Open <http://localhost:5050>. On `localhost`, `app.js` talks to the Firestore
+Open <http://localhost:5050>. (`python3 -m http.server -d public` also works for
+layout work; the counter stays hidden without Firebase.) On `localhost`, `app.js` talks to the Firestore
 emulator on port 8085, so test clicks never touch the real counter. The first
 run downloads the Firestore emulator (needs Java 21+).

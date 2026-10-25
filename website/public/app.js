@@ -9,21 +9,23 @@ const RELEASES_PAGE = `https://github.com/${REPO}/releases/latest`;
 const FALLBACK = { tag: "v0.1.0", date: "2026-10-20" };
 const COUNTER_DOC = "stats/downloads";
 const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
+const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const $ = (id) => document.getElementById(id);
-const els = {
-  download: $("download"),
-  badge: $("version-badge"),
-  meta: $("release-meta"),
-  counter: $("counter"),
-  count: $("download-count"),
-  countLabel: $("download-label"),
-  notes: $("notes"),
-  notesTitle: $("notes-title"),
-  notesLink: $("notes-link"),
+const all = (selector) => [...document.querySelectorAll(selector)];
+const setText = (selector, text) => all(selector).forEach((el) => (el.textContent = text));
+
+// Two sources for the download total: the Firestore counter (website clicks)
+// and GitHub's own download_count for every DMG ever released (which also
+// includes downloads made straight from GitHub). The page shows the larger.
+const state = {
+  tag: FALLBACK.tag,
+  url: RELEASES_PAGE,
+  firestore: null,
+  siteCount: null,
+  githubCount: null,
+  ownDownload: 0,
+  shown: null,
 };
-
-const state = { tag: FALLBACK.tag, url: RELEASES_PAGE, count: null, firestore: null };
 
 // ---------- Helpers ----------
 
@@ -46,36 +48,40 @@ function escapeHTML(text) {
   return text.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 }
 
-// Just enough Markdown for release notes: headings, bullet lists, paragraphs,
-// **bold** and `code`. Text is escaped first, so notes cannot inject HTML.
+// Just enough Markdown for release notes: headings, bullet and numbered lists,
+// paragraphs, **bold**, `code` and https links. Text is escaped first, so notes
+// cannot inject HTML. Sections the page already covers (Install) are left out.
 function renderNotes(markdown) {
   const inline = (s) =>
     escapeHTML(s)
       .replace(/`([^`]+)`/g, "<code>$1</code>")
-      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+      .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+      .replace(/\[([^\]]+)\]\((https:\/\/[^\s)]+)\)/g, '<a href="$2">$1</a>');
   const out = [];
-  let list = false;
+  let list = null;
+  const close = () => list && (out.push(`</${list}>`), (list = null));
   for (const raw of markdown.split(/\r?\n/)) {
     const line = raw.trim();
-    const item = line.match(/^[-*]\s+(.*)/);
-    if (!item && list) { out.push("</ul>"); list = false; }
+    if (/^#{1,6}\s+install\b/i.test(line)) break;
+    const item = line.match(/^(?:[-*]|(\d+)\.)\s+(.*)/);
     if (item) {
-      if (!list) { out.push("<ul>"); list = true; }
-      out.push(`<li>${inline(item[1])}</li>`);
-    } else if (/^#{1,6}\s/.test(line)) {
-      out.push(`<h4>${inline(line.replace(/^#+\s*/, ""))}</h4>`);
-    } else if (line) {
-      out.push(`<p>${inline(line)}</p>`);
+      const kind = item[1] ? "ol" : "ul";
+      if (list !== kind) close(), out.push(`<${kind}>`), (list = kind);
+      out.push(`<li>${inline(item[2])}</li>`);
+      continue;
     }
+    close();
+    if (/^#{1,6}\s/.test(line)) out.push(`<h4>${inline(line.replace(/^#+\s*/, ""))}</h4>`);
+    else if (line) out.push(`<p>${inline(line)}</p>`);
   }
-  if (list) out.push("</ul>");
+  close();
   return out.join("");
 }
 
 // ---------- Latest release (GitHub) ----------
 
 async function loadRelease() {
-  const cacheKey = "rvlc-release";
+  const cacheKey = "rvlc-release-v2";
   let release = null;
   try {
     const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
@@ -84,12 +90,16 @@ async function loadRelease() {
 
   if (!release) {
     try {
-      const res = await fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+      const res = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=100`, {
         headers: { Accept: "application/vnd.github+json" },
       });
       if (!res.ok) throw new Error(`GitHub API ${res.status}`);
-      const data = await res.json();
-      const dmgs = (data.assets || []).filter((a) => a.name.toLowerCase().endsWith(".dmg"));
+      const published = (await res.json()).filter((r) => !r.draft && !r.prerelease);
+      const isDmg = (a) => a.name.toLowerCase().endsWith(".dmg");
+      const downloads = published.flatMap((r) => r.assets.filter(isDmg)).reduce((n, a) => n + a.download_count, 0);
+      const data = published[0];
+      if (!data) throw new Error("no published release");
+      const dmgs = (data.assets || []).filter(isDmg);
       const dmg = dmgs.find((a) => /arm64|apple|universal/i.test(a.name)) || dmgs[0];
       release = {
         tag: data.tag_name,
@@ -98,6 +108,7 @@ async function loadRelease() {
         page: data.html_url,
         url: dmg ? dmg.browser_download_url : null,
         size: dmg ? dmg.size : null,
+        downloads,
       };
       try { sessionStorage.setItem(cacheKey, JSON.stringify({ at: Date.now(), release })); } catch { /* ignore */ }
     } catch (err) {
@@ -106,18 +117,24 @@ async function loadRelease() {
     }
   }
 
+  state.githubCount = release.downloads ?? null;
+  renderCount();
   state.tag = release.tag;
   state.url = release.url || release.page || RELEASES_PAGE;
-  els.download.href = state.url;
-  els.badge.textContent = withV(release.tag);
-  els.meta.textContent = [`Released ${formatDate(release.date)}`, release.size && formatSize(release.size)]
-    .filter(Boolean)
-    .join(" · ");
-  els.notesTitle.textContent = `RVLC ${release.tag.replace(/^v/, "")}`;
-  if (release.notes.trim()) els.notes.innerHTML = renderNotes(release.notes);
+  all("[data-download]").forEach((a) => (a.href = state.url));
+  setText("[data-version]", withV(release.tag));
+  setText(
+    "[data-release-meta]",
+    ["Apple silicon · macOS 26+", release.size && formatSize(release.size)].filter(Boolean).join(" · "),
+  );
+  setText("[data-release-date]", `Released ${formatDate(release.date)}`);
+  setText("[data-notes-title]", `RVLC ${release.tag.replace(/^v/, "")}`);
+  if (release.notes.trim()) all("[data-notes]").forEach((el) => (el.innerHTML = renderNotes(release.notes)));
   if (release.page) {
-    els.notesLink.href = release.page;
-    els.notesLink.textContent = "Release on GitHub →";
+    all("[data-notes-link]").forEach((a) => {
+      a.href = release.page;
+      a.textContent = "Release on GitHub →";
+    });
   }
 }
 
@@ -134,11 +151,26 @@ async function firestoreConfig() {
   return { base, root, key };
 }
 
-function showCount(count) {
-  state.count = count;
-  els.count.textContent = new Intl.NumberFormat("en-US").format(count);
-  els.countLabel.textContent = count === 1 ? "download" : "downloads";
-  els.counter.hidden = false;
+function renderCount() {
+  const known = [state.siteCount, state.githubCount === null ? null : state.githubCount + state.ownDownload];
+  const values = known.filter((n) => n !== null);
+  if (!values.length) return;
+  const count = Math.max(...values);
+  const from = state.shown ?? 0;
+  state.shown = count;
+  setText("[data-count-label]", count === 1 ? "download" : "downloads");
+  all("[data-counter]").forEach((el) => (el.hidden = false));
+
+  const format = (n) => new Intl.NumberFormat("en-US").format(Math.round(n));
+  if (reducedMotion || count - from <= 1) return setText("[data-count]", format(count));
+  // Count up from the previous value.
+  const start = performance.now();
+  const step = (now) => {
+    const t = Math.min(1, (now - start) / 1400);
+    setText("[data-count]", format(from + (count - from) * (1 - Math.pow(1 - t, 3))));
+    if (t < 1 && state.shown === count) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 }
 
 async function loadCount() {
@@ -146,10 +178,14 @@ async function loadCount() {
     state.firestore = await firestoreConfig();
     const { base, root, key } = state.firestore;
     const res = await fetch(`${base}/${root}/${COUNTER_DOC}${key}`);
-    if (res.status === 404) return showCount(0);
-    if (!res.ok) throw new Error(`Firestore ${res.status}`);
-    const doc = await res.json();
-    showCount(Number(doc.fields?.count?.integerValue ?? 0));
+    if (res.status === 404) {
+      state.siteCount = 0;
+    } else {
+      if (!res.ok) throw new Error(`Firestore ${res.status}`);
+      const doc = await res.json();
+      state.siteCount = Number(doc.fields?.count?.integerValue ?? 0);
+    }
+    renderCount();
   } catch (err) {
     console.info("Download counter unavailable:", err.message);
   }
@@ -181,21 +217,21 @@ async function incrementCount() {
 // Each browser counts once per release, so repeat clicks don't inflate the total.
 async function onDownload(event) {
   event.preventDefault();
+  const button = event.currentTarget;
   const counted = `rvlc-dl-${state.tag}`;
   if (!storage.get(counted)) {
-    els.download.setAttribute("aria-busy", "true");
+    button.setAttribute("aria-busy", "true");
     const ok = await Promise.race([incrementCount().catch(() => false), timeout(1500).then(() => false)]);
-    if (ok) {
-      storage.set(counted, "1");
-      if (state.count !== null) showCount(state.count + 1);
-    }
-    els.download.removeAttribute("aria-busy");
+    if (ok && state.siteCount !== null) state.siteCount += 1;
+    state.ownDownload = 1; // GitHub counts this download too, a little later
+    storage.set(counted, "1");
+    renderCount();
+    button.removeAttribute("aria-busy");
   }
   location.href = state.url;
 }
 
-els.download.addEventListener("click", onDownload);
-document.querySelectorAll("[data-download]").forEach((a) => a.addEventListener("click", onDownload));
+all("[data-download]").forEach((a) => a.addEventListener("click", onDownload));
 
 loadRelease();
 loadCount();
