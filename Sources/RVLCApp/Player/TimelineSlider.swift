@@ -208,15 +208,17 @@ final class TimelineSlider: NSSlider {
     static let hoverGap: CGFloat = 5
 
     /// Frame for the hover bubble, in `host` coordinates, centred on `x` and
-    /// placed above the bar (clamped to the host's width).
+    /// placed above the bar (clamped to the host's width). It also clears the
+    /// slider's own frame, which is taller than the knob on some macOS versions.
     func hoverFrame(atX x: CGFloat, labelSize: NSSize, in host: NSView) -> NSRect {
         let bar = slim.barRect(flipped: isFlipped)
         let barInHost = host.convert(NSRect(x: x, y: bar.minY, width: 0, height: bar.height), from: self)
+        let sliderInHost = host.convert(bounds, from: self)
         let originX = max(4, min(host.bounds.width - labelSize.width - 4, barInHost.midX - labelSize.width / 2))
         let originY =
             host.isFlipped
-            ? barInHost.minY - Self.hoverGap - labelSize.height - slim.knobDiameter / 2
-            : barInHost.maxY + Self.hoverGap + slim.knobDiameter / 2
+            ? min(barInHost.minY - Self.hoverGap - slim.knobDiameter / 2, sliderInHost.minY) - labelSize.height
+            : max(barInHost.maxY + Self.hoverGap + slim.knobDiameter / 2, sliderInHost.maxY)
         return NSRect(x: originX, y: originY, width: labelSize.width, height: labelSize.height)
     }
 
