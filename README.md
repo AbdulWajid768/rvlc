@@ -13,6 +13,8 @@
 
 **Reimagined VLC.** Play anything. Fix everything.
 
+**[Download RVLC for macOS →](https://rvlc.abdulwajid.dev)** (Apple silicon, macOS 26 or later)
+
 RVLC (Reimagined VLC) is a free, open-source desktop media player for macOS with a
 signature feature: **Smart Subtitle Sync**. Subtitles that appear too early or
 too late, drift over a film, or audio that runs ahead of the picture can be

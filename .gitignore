@@ -7,3 +7,8 @@ DerivedData/
 .idea/
 .claude/
 /Tests/Fixtures/generated/
+
+# Firebase (website/)
+website/.firebase/
+firebase-debug.log
+firestore-debug.log

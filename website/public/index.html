@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RVLC — Reimagined VLC for macOS</title>
+  <meta name="description" content="RVLC is a free, open-source media player for macOS with Smart Subtitle Sync: fix early, late or drifting subtitles and out-of-sync audio in seconds.">
+  <meta name="theme-color" content="#0B0F1A">
+  <link rel="canonical" href="https://rvlc.abdulwajid.dev/">
+
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://rvlc.abdulwajid.dev/">
+  <meta property="og:title" content="RVLC — Reimagined VLC">
+  <meta property="og:description" content="Play anything. Fix everything. A free, open-source macOS player with Smart Subtitle Sync.">
+  <meta property="og:image" content="https://rvlc.abdulwajid.dev/assets/social-preview.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/app.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap nav">
+      <a class="brand" href="#top" aria-label="RVLC home">
+        <img src="/assets/symbol.svg" alt="" width="28" height="28">
+        <span>RVLC</span>
+      </a>
+      <nav aria-label="Sections">
+        <a href="#sync">Subtitle Sync</a>
+        <a href="#features">Features</a>
+        <a href="#install">Install</a>
+        <a href="#whats-new">What's new</a>
+        <a href="https://github.com/AbdulWajid768/rvlc" class="nav-gh">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <picture>
+            <source srcset="/assets/logo-light.svg" media="(prefers-color-scheme: light)">
+            <img class="hero-logo" src="/assets/logo-dark.svg" alt="RVLC — Reimagined VLC" width="779" height="256">
+          </picture>
+          <h1>Play anything.<br><span class="grad">Fix everything.</span></h1>
+          <p class="lede">
+            A free, open-source media player for macOS with <strong>Smart Subtitle Sync</strong>.
+            Subtitles too early, too late or drifting across a film? Audio ahead of the picture?
+            Fix it in seconds, and export a corrected subtitle file without touching the original.
+          </p>
+
+          <div class="cta">
+            <a id="download" class="btn-primary" href="https://github.com/AbdulWajid768/rvlc/releases/latest">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16"/></svg>
+              <span>Download for macOS</span>
+            </a>
+            <div class="cta-meta">
+              <span class="badge" id="version-badge">v0.1.0</span>
+              <span id="release-meta">Released Oct 20, 2026</span>
+            </div>
+          </div>
+
+          <p class="counter" id="counter" hidden>
+            <strong id="download-count">0</strong> <span id="download-label">downloads</span>
+          </p>
+          <p class="reqs">
+            Requires a Mac with Apple silicon and macOS 26 or later ·
+            <a href="https://github.com/AbdulWajid768/rvlc">Source code</a> ·
+            GPL-3.0
+          </p>
+        </div>
+
+        <!-- Illustration of the player with Subtitle Studio open (decorative) -->
+        <div class="mock" aria-hidden="true">
+          <div class="mock-bar"><i></i><i></i><i></i><span>RVLC</span></div>
+          <div class="mock-body">
+            <div class="mock-video">
+              <div class="mock-scene"></div>
+              <p class="mock-sub">I'll be right there — just give me a second.</p>
+              <div class="mock-controls">
+                <span class="mock-play"></span>
+                <span class="mock-time">1:02:37</span>
+                <span class="mock-track"><b></b></span>
+                <span class="mock-time">-24:11</span>
+              </div>
+            </div>
+            <div class="mock-side">
+              <p class="mock-h">Subtitle Studio</p>
+              <p class="mock-readout">+250 <small>ms</small></p>
+              <div class="mock-steps"><span>−100</span><span>−250</span><span>−500</span><span>+100</span><span>+250</span><span>+500</span></div>
+              <p class="mock-h">Sync to speech</p>
+              <div class="mock-fit"><span>2 points</span><span class="ok">Drift 23.976 → 25 fps</span></div>
+              <div class="mock-actions"><span class="primary">Apply</span><span>Discard</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Smart Subtitle Sync -->
+    <section id="sync" class="section">
+      <div class="wrap">
+        <p class="eyebrow">The signature feature</p>
+        <h2>Smart Subtitle Sync</h2>
+        <p class="section-lede">
+          Every way subtitles go wrong, handled in one sidebar. Nothing is applied until you say so:
+          every suggestion can be previewed, applied or discarded.
+        </p>
+
+        <div class="sync-grid">
+          <article class="sync-card">
+            <span class="step">1</span>
+            <h3>Live offset</h3>
+            <p>Shift subtitles by ±100, 250 or 500 ms, or type an exact millisecond value. Changes show instantly while the video plays.</p>
+            <p class="keys"><kbd>Z</kbd> earlier <kbd>X</kbd> later <kbd>⇧Z</kbd> reset</p>
+          </article>
+          <article class="sync-card">
+            <span class="step">2</span>
+            <h3>Sync to speech</h3>
+            <p>Pause on a spoken line, pick it, and sync it to now. One point fixes an offset; two or more across the film also fix drift, like 23.976 ↔ 25 fps, with a fit-quality readout.</p>
+            <p class="keys"><kbd>Y</kbd> sync selected line</p>
+          </article>
+          <article class="sync-card">
+            <span class="step">3</span>
+            <h3>Automatic sync from audio</h3>
+            <p>RVLC compares speech in the soundtrack with subtitle timing and suggests an offset and frame-rate drift, with a confidence level. It all runs on your Mac.</p>
+          </article>
+          <article class="sync-card">
+            <span class="step">4</span>
+            <h3>Export, never overwrite</h3>
+            <p>Save a corrected SRT, WebVTT or ASS file (ASS styling preserved). The original subtitle file is never modified.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="section alt">
+      <div class="wrap">
+        <p class="eyebrow">Everything else</p>
+        <h2>A complete player, built natively for the Mac</h2>
+        <p class="section-lede">
+          Playback runs on <a href="https://mpv.io">libmpv</a> with FFmpeg underneath, so RVLC plays the same wide range
+          of formats as mpv. The interface is native AppKit, written in Swift.
+        </p>
+
+        <div class="feature-grid">
+          <article class="feature">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15h4m2 0h4M7 11h10"/></svg>
+            <h3>Subtitle Studio</h3>
+            <p>Import SRT, WebVTT and ASS/SSA with automatic encoding detection (UTF-8/16, Windows code pages, Shift JIS, GB18030, Big5…) and a manual override. Invalid files get a clear message.</p>
+          </article>
+          <article class="feature">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13 7 4 4"/></svg>
+            <h3>Subtitle editor</h3>
+            <p>Edit text and timings, search &amp; replace with case, whole-word and regex options, nudge lines, set start to now, undo/redo, all with live preview. <kbd>⌘E</kbd></p>
+          </article>
+          <article class="feature">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h2m3-5v10m4-13v16m4-11v6m4-3h1"/></svg>
+            <h3>Audio Sync Lab</h3>
+            <p>An independent audio delay, remembered per file. Add external audio tracks such as a dub and switch tracks. <kbd>C</kbd> / <kbd>V</kbd> to nudge.</p>
+          </article>
+          <article class="feature">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7L8 5Z"/></svg>
+            <h3>Player</h3>
+            <p>Precise seeking down to a single frame, a scrubbable timeline whose hover bubble shows exactly where a click lands, Go to Time (<kbd>⌘J</kbd>), speed 0.25–4×, instant full screen and drag &amp; drop.</p>
+          </article>
+          <article class="feature">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/><path d="m16 15 5 3-5 3v-6Z"/></svg>
+            <h3>Library &amp; playlist</h3>
+            <p>Recently played with resume positions, favourites, search and sorting, file info. A persistent, reorderable play queue with repeat modes, and whole folders at once.</p>
+          </article>
+          <article class="feature">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4v16M12 4a8 8 0 0 1 0 16"/></svg>
+            <h3>Picture &amp; Sound</h3>
+            <p>Aspect override, fit/fill/stretch, brightness, contrast, saturation, gamma, rotation, hardware decoding, equalizer presets, loudness normalisation and amplification to 200 % with a limiter.</p>
+          </article>
+          <article class="feature">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg>
+            <h3>Native macOS design</h3>
+            <p>Light, dark and system themes, a responsive layout, VoiceOver labels and configurable keyboard shortcuts that never get in the way of typing.</p>
+          </article>
+          <article class="feature">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5c0 4.5 3 8.5 7 10 4-1.5 7-5.5 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg>
+            <h3>Private by design</h3>
+            <p>No account, no telemetry, no analytics and no network requests. Your media, subtitles and audio analysis never leave your Mac.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Install -->
+    <section id="install" class="section">
+      <div class="wrap">
+        <p class="eyebrow">Install</p>
+        <h2>Up and running in a minute</h2>
+
+        <ol class="install-steps">
+          <li>
+            <h3>Download the DMG</h3>
+            <p>Use the <a href="#top" data-download>Download for macOS</a> button. The download is the latest release from GitHub.</p>
+          </li>
+          <li>
+            <h3>Drag RVLC to Applications</h3>
+            <p>Open the downloaded DMG and drag <strong>RVLC</strong> onto the <strong>Applications</strong> shortcut.</p>
+          </li>
+          <li>
+            <h3>Allow it on first launch</h3>
+            <p>
+              RVLC is not yet notarised by Apple, so macOS blocks the first launch. Open RVLC once, click <strong>Done</strong>,
+              then go to <strong>System Settings › Privacy &amp; Security</strong>, scroll down and click <strong>Open Anyway</strong>.
+              You only need to do this once.
+            </p>
+            <details>
+              <summary>Prefer the Terminal?</summary>
+              <p>This removes the quarantine flag macOS adds to downloaded apps:</p>
+              <pre><code>xattr -dr com.apple.quarantine /Applications/RVLC.app</code></pre>
+            </details>
+          </li>
+        </ol>
+        <p class="note">
+          RVLC needs a Mac with Apple silicon running macOS 26 or later. It is free software under the GPL; you can also
+          <a href="https://github.com/AbdulWajid768/rvlc#run-the-development-version">build it from source</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- What's new -->
+    <section id="whats-new" class="section alt">
+      <div class="wrap narrow">
+        <p class="eyebrow">What's new</p>
+        <h2 id="notes-title">RVLC 0.1.0</h2>
+        <div id="notes" class="notes">
+          <p>The first release: a native macOS player on libmpv with Subtitle Studio, sync to speech with drift correction,
+            automatic sync from audio, a subtitle editor, Audio Sync Lab, library and playlist, and Picture &amp; Sound controls.</p>
+        </div>
+        <p><a id="notes-link" href="https://github.com/AbdulWajid768/rvlc/blob/main/CHANGELOG.md">Full changelog →</a></p>
+      </div>
+    </section>
+
+    <!-- Open source -->
+    <section class="section oss">
+      <div class="wrap oss-inner">
+        <div>
+          <h2>Free and open source</h2>
+          <p>RVLC is licensed under the GNU GPL v3.0 or later. Read the code, report a bug, or send a pull request.</p>
+        </div>
+        <a class="btn-secondary" href="https://github.com/AbdulWajid768/rvlc">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 2C6.5 2 2 6.6 2 12.2c0 4.5 2.9 8.3 6.8 9.7.5.1.7-.2.7-.5v-1.8c-2.8.6-3.4-1.2-3.4-1.2-.5-1.2-1.1-1.5-1.1-1.5-.9-.6.1-.6.1-.6 1 .1 1.5 1 1.5 1 .9 1.6 2.4 1.1 2.9.9.1-.7.4-1.1.6-1.4-2.2-.3-4.6-1.1-4.6-5 0-1.1.4-2 1-2.7-.1-.3-.4-1.3.1-2.7 0 0 .8-.3 2.8 1a9.6 9.6 0 0 1 5 0c1.9-1.3 2.8-1 2.8-1 .5 1.4.2 2.4.1 2.7.6.7 1 1.6 1 2.7 0 3.9-2.3 4.7-4.6 5 .4.3.7.9.7 1.9v2.8c0 .3.2.6.7.5A10.2 10.2 0 0 0 22 12.2C22 6.6 17.5 2 12 2Z"/></svg>
+          <span>View on GitHub</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-inner">
+      <p>© RVLC contributors · <a href="https://github.com/AbdulWajid768/rvlc/blob/main/LICENSE">GPL-3.0-or-later</a></p>
+      <nav aria-label="Footer">
+        <a href="https://github.com/AbdulWajid768/rvlc">Source</a>
+        <a href="https://github.com/AbdulWajid768/rvlc/releases">Releases</a>
+        <a href="https://github.com/AbdulWajid768/rvlc/blob/main/SECURITY.md">Security &amp; privacy</a>
+        <a href="https://github.com/AbdulWajid768/rvlc/issues">Report an issue</a>
+      </nav>
+    </div>
+    <p class="wrap fineprint">RVLC is an independent project and is not affiliated with VideoLAN or VLC media player.</p>
+  </footer>
+</body>
+</html>
