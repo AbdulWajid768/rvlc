@@ -35,6 +35,7 @@ final class SidebarViewController: NSViewController {
     private var panels: [SidebarTab: NSViewController] = [:]
     private(set) var current: SidebarTab = .playlist
     var onOpenFiles: (() -> Void)?
+    var onOpenFolder: (() -> Void)?
     var onOpenSubtitle: (() -> Void)?
     var onOpenAudio: (() -> Void)?
     var onOpenEditor: (() -> Void)?
@@ -69,15 +70,29 @@ final class SidebarViewController: NSViewController {
         segmented.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
         container.translatesAutoresizingMaskIntoConstraints = false
+
+        // Always available, regardless of which tab is showing: once a file is
+        // playing, the empty-state's Open File/Open Folder buttons are gone, and
+        // these are the only remaining way to switch to a different file or folder.
+        let openFile = IconButton(.file, label: "Open File…") { [weak self] in self?.onOpenFiles?() }
+        openFile.setToolTip("Open File…", shortcut: nil)
+        let openFolder = IconButton(.folder, label: "Open Folder…") { [weak self] in self?.onOpenFolder?() }
+        openFolder.setToolTip("Open Folder…", shortcut: nil)
+        let openButtons = hStack([openFile, openFolder], spacing: 2)
+        openButtons.translatesAutoresizingMaskIntoConstraints = false
+
         root.addSubview(segmented)
         root.addSubview(titleLabel)
+        root.addSubview(openButtons)
         root.addSubview(container)
         NSLayoutConstraint.activate([
             segmented.topAnchor.constraint(equalTo: root.safeAreaLayoutGuide.topAnchor, constant: Theme.spaceS),
             segmented.centerXAnchor.constraint(equalTo: root.centerXAnchor),
             titleLabel.topAnchor.constraint(equalTo: segmented.bottomAnchor, constant: Theme.spaceM),
             titleLabel.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: Theme.spaceL),
-            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: root.trailingAnchor, constant: -Theme.spaceL),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: openButtons.leadingAnchor, constant: -Theme.spaceS),
+            openButtons.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+            openButtons.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -Theme.spaceM),
             container.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: Theme.spaceS),
             container.leadingAnchor.constraint(equalTo: root.leadingAnchor),
             container.trailingAnchor.constraint(equalTo: root.trailingAnchor),

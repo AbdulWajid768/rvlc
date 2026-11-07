@@ -76,6 +76,7 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         bar.onGoToTime = { [weak self] in self?.showGoToTime() }
         bar.setSidebarVisible(!sidebarItem.isCollapsed)
         sidebarVC.onOpenFiles = { [weak self] in self?.openFiles() }
+        sidebarVC.onOpenFolder = { [weak self] in self?.openFolder() }
         sidebarVC.onOpenSubtitle = { [weak self] in self?.openSubtitle() }
         sidebarVC.onOpenAudio = { [weak self] in self?.openExternalAudio() }
         sidebarVC.onOpenEditor = { [weak self] in self?.showEditor() }

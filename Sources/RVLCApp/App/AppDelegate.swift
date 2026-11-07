@@ -445,5 +445,5 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 public enum RVLCVersion {
-    public static let string = "0.1.0"
+    public static let string = "0.1.1"
 }

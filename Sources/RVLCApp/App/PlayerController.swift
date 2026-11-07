@@ -96,7 +96,7 @@ public final class PlayerController: ObservableObject {
         for url in urls.map(Self.canonical) {
             var isDir: ObjCBool = false
             if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir), isDir.boolValue {
-                media += MediaLibrary.mediaFiles(in: url)
+                media += MediaLibrary.mediaFiles(in: url, recursive: true)
             } else if SubtitleIO.fileExtensions.contains(url.pathExtension.lowercased()) {
                 subtitleFiles.append(url)
             } else {
@@ -431,7 +431,7 @@ public final class PlayerController: ObservableObject {
         for url in urls.map(Self.canonical) {
             var isDir: ObjCBool = false
             if FileManager.default.fileExists(atPath: url.path, isDirectory: &isDir), isDir.boolValue {
-                media += MediaLibrary.mediaFiles(in: url)
+                media += MediaLibrary.mediaFiles(in: url, recursive: true)
             } else if !SubtitleIO.fileExtensions.contains(url.pathExtension.lowercased()) {
                 media.append(url)
             }

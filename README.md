@@ -26,7 +26,7 @@ plays the same wide range of formats as mpv. The interface is a native AppKit
 app written in Swift. Everything runs locally: no account, no telemetry, no
 network requests.
 
-> Status: **0.1.0, early release.** Built and tested on macOS 26 (Apple
+> Status: **0.1.1, early release.** Built and tested on macOS 26 (Apple
 > silicon). See [Verified capabilities](#verified-capabilities) and
 > [Limitations](#limitations) for exactly what has been checked.
 >

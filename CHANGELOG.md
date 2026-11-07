@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.1 — 2026-11-07
+
+- Fixed: "Open Folder…" (and dropping a folder onto the playlist) only looked at a
+  folder's top level, so folders that organise media into subfolders (season
+  folders, per-clip export folders, …) reported "The folder contains no
+  supported media files." even when they had plenty. It now searches recursively.
+- Added: Open File… and Open Folder… buttons in the sidebar, next to its tab
+  switcher, so another file or folder can be opened while something is already
+  playing — until now the only way in was the start screen, which disappears
+  once playback begins.
+
 ## 0.1.0 — 2026-10-20
 
 First release.

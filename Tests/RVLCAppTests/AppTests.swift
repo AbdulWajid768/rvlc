@@ -7,6 +7,13 @@ import XCTest
 @testable import RVLCCore
 @testable import RVLCEngine
 
+/// `URL.resolvingSymlinksInPath()` leaves `/var`, `/tmp` and `/etc` unresolved, unlike
+/// `realpath(3)`; tests comparing against a temp-directory path need the real one.
+func realPath(_ path: String) -> String {
+    var buffer = [Int8](repeating: 0, count: Int(PATH_MAX))
+    return realpath(path, &buffer).map { String(cString: $0) } ?? path
+}
+
 /// Builds a real (headless) engine, isolated preferences and a temporary library.
 class AppTestCase: XCTestCase {
     var media: Fixtures.Media!
@@ -67,6 +74,23 @@ final class PlayerControllerTests: AppTestCase {
         controller.open([media.subtitle])
         XCTAssertNotNil(controller.lastError)
         XCTAssertNil(controller.subtitles.document)
+    }
+
+    /// "Open Folder…" promises every media file in the folder, so it must also
+    /// find files nested in subfolders (season folders, per-clip export folders, …).
+    func testOpeningFolderFindsMediaInNestedSubfolders() throws {
+        let nested = tempDir.appendingPathComponent("Show/Season 1", isDirectory: true)
+        try FileManager.default.createDirectory(at: nested, withIntermediateDirectories: true)
+        let copy = nested.appendingPathComponent(media.video.lastPathComponent)
+        try FileManager.default.copyItem(at: media.video, to: copy)
+        // `/var` vs `/private/var` (see testOpeningSamePathThroughSymlinkSharesHistory): resolve
+        // with realpath(3), since URL.resolvingSymlinksInPath() leaves that one unresolved.
+        let expected = realPath(copy.path)
+        controller.open([tempDir.appendingPathComponent("Show")])
+        waitUntil("playing the nested file") {
+            self.player.status == .playing && self.player.currentURL.map { realPath($0.path) } == expected
+        }
+        XCTAssertEqual(controller.playlist.items.map(realPath), [expected])
     }
 
     func testPlaylistAdvancesAtEndOfFile() {
