@@ -35,7 +35,6 @@ final class SidebarViewController: NSViewController {
     private var panels: [SidebarTab: NSViewController] = [:]
     private(set) var current: SidebarTab = .playlist
     var onOpenFiles: (() -> Void)?
-    var onOpenFolder: (() -> Void)?
     var onOpenSubtitle: (() -> Void)?
     var onOpenAudio: (() -> Void)?
     var onOpenEditor: (() -> Void)?
@@ -72,13 +71,11 @@ final class SidebarViewController: NSViewController {
         container.translatesAutoresizingMaskIntoConstraints = false
 
         // Always available, regardless of which tab is showing: once a file is
-        // playing, the empty-state's Open File/Open Folder buttons are gone, and
-        // these are the only remaining way to switch to a different file or folder.
+        // playing, the empty state's Open File button is gone, and this is the
+        // only remaining way to switch to a different file (or drop one in).
         let openFile = IconButton(.file, label: "Open File…") { [weak self] in self?.onOpenFiles?() }
         openFile.setToolTip("Open File…", shortcut: nil)
-        let openFolder = IconButton(.folder, label: "Open Folder…") { [weak self] in self?.onOpenFolder?() }
-        openFolder.setToolTip("Open Folder…", shortcut: nil)
-        let openButtons = hStack([openFile, openFolder], spacing: 2)
+        let openButtons = hStack([openFile], spacing: 2)
         openButtons.translatesAutoresizingMaskIntoConstraints = false
 
         root.addSubview(segmented)

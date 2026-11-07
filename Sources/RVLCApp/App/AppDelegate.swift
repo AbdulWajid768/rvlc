@@ -300,7 +300,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 "File",
                 [
                     item("Open File…", "o") { [weak self] in self?.mainWindow.openFiles() },
-                    item("Open Folder…", "o", [.command, .shift]) { [weak self] in self?.mainWindow.openFolder() },
                     submenu(
                         "Open Recent", recent.isEmpty ? [NSMenuItem(title: "No Recent Items", action: nil, keyEquivalent: "")] : recent),
                     .separator(),

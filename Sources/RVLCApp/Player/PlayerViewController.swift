@@ -6,7 +6,6 @@ import RVLCEngine
 /// Shown before any media is opened.
 final class EmptyStateView: NSView {
     var onOpenFile: (() -> Void)?
-    var onOpenFolder: (() -> Void)?
     var onOpenRecent: ((String) -> Void)?
     private let recentStack = NSStackView()
 
@@ -21,18 +20,13 @@ final class EmptyStateView: NSView {
         let open = makeButton("Open File…", symbol: .file, tip: "Open a video or audio file (⌘O)") { [weak self] in self?.onOpenFile?() }
         open.keyEquivalent = "\r"
         open.controlSize = .large
-        let folder = makeButton("Open Folder…", symbol: .folder, tip: "Add every media file in a folder to the playlist (⇧⌘O)") {
-            [weak self] in self?.onOpenFolder?()
-        }
-        folder.controlSize = .large
-        let buttons = hStack([open, folder], spacing: Theme.spaceS)
         let hint = makeLabel(
             "or drop video, audio or subtitle files here", font: Theme.captionFont, color: NSColor.white.withAlphaComponent(0.5))
         recentStack.orientation = .vertical
         recentStack.alignment = .centerX
         recentStack.spacing = 2
 
-        let stack = NSStackView(views: [logo, title, meaning, tagline, buttons, hint, recentStack])
+        let stack = NSStackView(views: [logo, title, meaning, tagline, open, hint, recentStack])
         stack.orientation = .vertical
         stack.alignment = .centerX
         stack.spacing = Theme.spaceS
@@ -220,7 +214,6 @@ final class PlayerViewController: NSViewController {
     private var statusBeforeClick: PlaybackStatus?
 
     var onOpenFile: (() -> Void)?
-    var onOpenFolder: (() -> Void)?
 
     init(controller: PlayerController, videoView: NSView?) {
         self.controller = controller
@@ -275,7 +268,6 @@ final class PlayerViewController: NSViewController {
         ])
 
         emptyState.onOpenFile = { [weak self] in self?.onOpenFile?() }
-        emptyState.onOpenFolder = { [weak self] in self?.onOpenFolder?() }
         emptyState.onOpenRecent = { [weak self] path in self?.controller.open([URL(fileURLWithPath: path)]) }
         errorOverlay.onOpenAnother = { [weak self] in self?.onOpenFile?() }
         errorOverlay.onDismiss = { [weak self] in

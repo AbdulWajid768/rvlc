@@ -76,8 +76,8 @@ final class PlayerControllerTests: AppTestCase {
         XCTAssertNil(controller.subtitles.document)
     }
 
-    /// "Open Folder…" promises every media file in the folder, so it must also
-    /// find files nested in subfolders (season folders, per-clip export folders, …).
+    /// Opening a folder promises every media file in it, so it must also find
+    /// files nested in subfolders (season folders, per-clip export folders, …).
     func testOpeningFolderFindsMediaInNestedSubfolders() throws {
         let nested = tempDir.appendingPathComponent("Show/Season 1", isDirectory: true)
         try FileManager.default.createDirectory(at: nested, withIntermediateDirectories: true)

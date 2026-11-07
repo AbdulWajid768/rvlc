@@ -67,7 +67,6 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
 
     private func wire() {
         playerVC.onOpenFile = { [weak self] in self?.openFiles() }
-        playerVC.onOpenFolder = { [weak self] in self?.openFolder() }
         let bar = playerVC.controlBar
         bar.onToggleSidebar = { [weak self] in self?.toggleSidebar() }
         bar.onShowPanel = { [weak self] tab in self?.showPanel(tab) }
@@ -76,7 +75,6 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         bar.onGoToTime = { [weak self] in self?.showGoToTime() }
         bar.setSidebarVisible(!sidebarItem.isCollapsed)
         sidebarVC.onOpenFiles = { [weak self] in self?.openFiles() }
-        sidebarVC.onOpenFolder = { [weak self] in self?.openFolder() }
         sidebarVC.onOpenSubtitle = { [weak self] in self?.openSubtitle() }
         sidebarVC.onOpenAudio = { [weak self] in self?.openExternalAudio() }
         sidebarVC.onOpenEditor = { [weak self] in self?.showEditor() }
@@ -180,14 +178,6 @@ final class MainWindowController: NSWindowController, NSWindowDelegate {
         panel.allowsMultipleSelection = true
         panel.canChooseDirectories = false
         panel.allowedContentTypes = Self.mediaTypes + Self.subtitleTypes
-        runPanel(panel) { [weak self] urls in self?.controller.open(urls) }
-    }
-
-    func openFolder() {
-        let panel = NSOpenPanel()
-        panel.title = "Open Folder"
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
         runPanel(panel) { [weak self] urls in self?.controller.open(urls) }
     }
 

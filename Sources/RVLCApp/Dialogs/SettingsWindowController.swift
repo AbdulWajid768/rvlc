@@ -338,7 +338,7 @@ final class ShortcutsWindowController: NSWindowController {
     required init?(coder: NSCoder) { fatalError() }
 
     static let menuShortcuts: [(String, String)] = [
-        ("Open File…", "⌘O"), ("Open Folder…", "⇧⌘O"), ("Load Subtitle File…", "⌘L"), ("Load External Audio…", "⇧⌘L"),
+        ("Open File…", "⌘O"), ("Load Subtitle File…", "⌘L"), ("Load External Audio…", "⇧⌘L"),
         ("Subtitle Editor", "⌘E"), ("Toggle Sidebar", "⌃⌘S"), ("Playlist / Library / Subtitles / Audio / Picture & Sound", "⌘1 … ⌘5"),
         ("Settings", "⌘,"), ("File Info", "⌘I"), ("Go to Time…", "⌘J"),
     ]
